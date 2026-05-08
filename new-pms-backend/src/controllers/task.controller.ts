@@ -94,3 +94,31 @@ export const updateTaskStatus = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ message: 'Error updating task' });
   }
 };
+
+/**
+ * GET all tasks for the logged-in user
+ */
+export const getTasks = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+
+    const tasks = await prisma.task.findMany({
+      where: {
+        project: {
+          userId: userId // Only get tasks from projects owned by this user
+        }
+      },
+      include: {
+        project: { select: { name: true } },
+        assignee: { select: { name: true, email: true } },
+        assigner: { select: { name: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json(tasks);
+  } catch (error) {
+    console.error('Get tasks error:', error);
+    res.status(500).json({ message: 'Error fetching tasks' });
+  }
+};

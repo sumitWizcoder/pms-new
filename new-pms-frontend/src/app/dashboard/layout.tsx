@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
-import { LayoutDashboard, FolderKanban, Settings, LogOut, User } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, CheckSquare, Settings, LogOut, User } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DashboardLayout({
@@ -13,19 +13,33 @@ export default function DashboardLayout({
 }) {
   const { user, logout } = useAuthStore();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
 
-  // 1. Protection: If not logged in, send back to login
+  // 1. Wait for the browser to be ready
   useEffect(() => {
-    if (!user) {
+    setMounted(true);
+  }, []);
+
+  // 2. Protection: Only check auth AFTER the browser is ready
+  useEffect(() => {
+    if (mounted && !user) {
       router.push('/login');
     }
-  }, [user, router]);
+  }, [user, router, mounted]);
 
-  if (!user) return null;
+  // Don't show anything until we've checked the auth state
+  if (!mounted || !user) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   const navItems = [
     { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Projects', href: '/dashboard/projects', icon: FolderKanban },
+    { name: 'Tasks', href: '/dashboard/tasks', icon: CheckSquare },
     { name: 'Settings', href: '/dashboard/settings', icon: Settings },
   ];
 
