@@ -1,11 +1,11 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import * as dotenv from 'dotenv';
-
-// 1. Load Environment Variables (Secrets)
-dotenv.config();
+import authRoutes from './routes/auth.routes';
 
 // 2. Initialize the Server
 const app = express();
@@ -17,7 +17,9 @@ app.use(cors());         // This allows our Frontend to talk to this Backend
 app.use(helmet());       // This adds security headers to protect our app
 app.use(morgan('dev'));  // This logs every request to the terminal so we can see what's happening
 
-// 4. Create a "Route" (A specific address people can visit)
+// 4. Routes
+app.use('/api/auth', authRoutes);
+
 // When someone visits http://localhost:5000/
 app.get('/', (req: Request, res: Response) => {
   res.json({ message: 'Welcome to the PMS API!' });
