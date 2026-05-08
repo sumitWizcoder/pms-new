@@ -1,0 +1,52 @@
+// 1. This tells Prisma where to look for your database
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 2. This tells Prisma to generate a "Client" (the code we use to talk to the DB)
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 3. THE MODELS (Our Data Structures)
+
+model User {
+  id        String    @id @default(uuid()) // Unique ID (like a fingerprint)
+  email     String    @unique             // No two users can have the same email
+  name      String?
+  password  String                        // We will hash this later for security
+  projects  Project[]                     // One user can have many projects
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id]) // Connects to a User
+  tasks       Task[]   // One project can have many tasks
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Task {
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  status      TaskStatus @default(TODO)
+  projectId   String
+  project     Project    @relation(fields: [projectId], references: [id]) // Connects to a Project
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+// 4. THE ENUM (A list of fixed choices)
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  BLOCKED
+}
