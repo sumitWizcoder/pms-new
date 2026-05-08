@@ -9,16 +9,22 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// 3. THE MODELS (Our Data Structures)
+// 3. THE MODELS
 
 model User {
-  id        String    @id @default(uuid()) // Unique ID (like a fingerprint)
-  email     String    @unique             // No two users can have the same email
-  name      String?
-  password  String                        // We will hash this later for security
-  projects  Project[]                     // One user can have many projects
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id              String    @id @default(uuid())
+  email           String    @unique
+  name            String?
+  password        String
+  projects        Project[]
+  
+  // Tasks assigned TO this user
+  assignedTasks   Task[]    @relation("TaskAssignee")
+  // Tasks created BY this user
+  createdTasks    Task[]    @relation("TaskAssigner")
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 model Project {
@@ -26,8 +32,8 @@ model Project {
   name        String
   description String?
   userId      String
-  user        User     @relation(fields: [userId], references: [id]) // Connects to a User
-  tasks       Task[]   // One project can have many tasks
+  user        User     @relation(fields: [userId], references: [id])
+  tasks       Task[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -37,16 +43,35 @@ model Task {
   title       String
   description String?
   status      TaskStatus @default(TODO)
+  priority    Priority   @default(MEDIUM) // NEW: How important is it?
+  
   projectId   String
-  project     Project    @relation(fields: [projectId], references: [id]) // Connects to a Project
+  project     Project    @relation(fields: [projectId], references: [id])
+
+  // NEW: Who assigned it?
+  assignerId  String
+  assigner    User       @relation("TaskAssigner", fields: [assignerId], references: [id])
+
+  // NEW: Who is doing it? (Optional, as a task might start unassigned)
+  assigneeId  String?
+  assignee    User?      @relation("TaskAssignee", fields: [assigneeId], references: [id])
+
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 }
 
-// 4. THE ENUM (A list of fixed choices)
+// 4. THE ENUMS
 enum TaskStatus {
   TODO
   IN_PROGRESS
+  REVIEW
   DONE
   BLOCKED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
 }

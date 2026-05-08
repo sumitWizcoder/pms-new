@@ -1,14 +1,32 @@
 import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth.middleware';
 import prisma from '../lib/prisma';
+import { createTaskSchema } from '../schemas/task.schema';
 
 /**
  * CREATE a new task within a project
  */
 export const createTask = async (req: AuthRequest, res: Response) => {
   try {
-    const { title, description, projectId } = req.body;
-    const userId = req.userId;
+    // 1. VALIDATE the request body
+    const validation = createTaskSchema.safeParse(req.body);
+    
+    if (!validation.success) {
+      return res.status(400).json({ 
+        message: 'Validation failed', 
+        errors: validation.error.errors.map(err => ({
+          field: err.path.join('.'),
+          message: err.message
+        }))
+      });
+    }
+
+    const { title, description, projectId, priority, assigneeId } = validation.data;
+    const userId = req.userId; // The person logged in is the ASSIGNER
+
+    if (!userId) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
 
     // 1. Verify project exists AND belongs to the user
     const project = await prisma.project.findUnique({
@@ -25,7 +43,14 @@ export const createTask = async (req: AuthRequest, res: Response) => {
         title,
         description,
         projectId,
+        priority: priority || 'MEDIUM',
+        assignerId: userId, // Current user is the assigner
+        assigneeId: assigneeId || null, // Optional: who is doing the work?
       },
+      include: {
+        assigner: { select: { name: true, email: true } },
+        assignee: { select: { name: true, email: true } },
+      }
     });
 
     res.status(201).json(task);
@@ -41,7 +66,7 @@ export const createTask = async (req: AuthRequest, res: Response) => {
 export const updateTaskStatus = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status, priority, assigneeId } = req.body;
     const userId = req.userId;
 
     // Verify task exists and user owns the parent project
@@ -56,7 +81,11 @@ export const updateTaskStatus = async (req: AuthRequest, res: Response) => {
 
     const updatedTask = await prisma.task.update({
       where: { id },
-      data: { status },
+      data: { 
+        status: status || task.status,
+        priority: priority || task.priority,
+        assigneeId: assigneeId !== undefined ? assigneeId : task.assigneeId,
+      },
     });
 
     res.json(updatedTask);

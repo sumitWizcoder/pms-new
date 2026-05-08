@@ -8,6 +8,7 @@ import morgan from 'morgan';
 import authRoutes from './routes/auth.routes';
 import projectRoutes from './routes/project.routes';
 import taskRoutes from './routes/task.routes';
+import { errorMiddleware } from './middleware/error.middleware';
 
 // 2. Initialize the Server
 const app = express();
@@ -23,6 +24,9 @@ app.use(morgan('dev'));  // This logs every request to the terminal so we can se
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
+
+// 5. Global Error Handler (MUST BE LAST)
+app.use(errorMiddleware);
 
 // When someone visits http://localhost:5000/
 app.get('/', (req: Request, res: Response) => {
