@@ -6,6 +6,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import authRoutes from './routes/auth.routes';
+import projectRoutes from './routes/project.routes';
+import taskRoutes from './routes/task.routes';
 
 // 2. Initialize the Server
 const app = express();
@@ -19,6 +21,8 @@ app.use(morgan('dev'));  // This logs every request to the terminal so we can se
 
 // 4. Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/tasks', taskRoutes);
 
 // When someone visits http://localhost:5000/
 app.get('/', (req: Request, res: Response) => {
