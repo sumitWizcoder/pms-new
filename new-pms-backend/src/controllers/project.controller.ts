@@ -1,6 +1,6 @@
-import { Response } from 'express';
-import { AuthRequest } from '../middleware/auth.middleware';
-import prisma from '../lib/prisma';
+import { Response } from "express";
+import { AuthRequest } from "../middleware/auth.middleware";
+import prisma from "../lib/prisma";
 
 /**
  * CREATE a new project
@@ -11,7 +11,7 @@ export const createProject = async (req: AuthRequest, res: Response) => {
     const userId = req.userId; // Provided by authMiddleware
 
     if (!userId) {
-      return res.status(401).json({ message: 'User not authenticated' });
+      return res.status(401).json({ message: "User not authenticated" });
     }
 
     const project = await prisma.project.create({
@@ -24,8 +24,8 @@ export const createProject = async (req: AuthRequest, res: Response) => {
 
     res.status(201).json(project);
   } catch (error) {
-    console.error('Create project error:', error);
-    res.status(500).json({ message: 'Error creating project' });
+    console.error("Create project error:", error);
+    res.status(500).json({ message: "Error creating project" });
   }
 };
 
@@ -38,13 +38,13 @@ export const getProjects = async (req: AuthRequest, res: Response) => {
 
     const projects = await prisma.project.findMany({
       where: { userId },
-      orderBy: { createdAt: 'desc' }, // Show newest projects first
+      orderBy: { createdAt: "desc" }, // Show newest projects first
     });
 
     res.json(projects);
   } catch (error) {
-    console.error('Get projects error:', error);
-    res.status(500).json({ message: 'Error fetching projects' });
+    console.error("Get projects error:", error);
+    res.status(500).json({ message: "Error fetching projects" });
   }
 };
 
@@ -58,20 +58,26 @@ export const deleteProject = async (req: AuthRequest, res: Response) => {
 
     // Check if the project exists AND belongs to the user
     const project = await prisma.project.findUnique({
-      where: { id },
+      where: {
+        id,
+      },
     });
 
     if (!project || project.userId !== userId) {
-      return res.status(404).json({ message: 'Project not found or unauthorized' });
+      return res
+        .status(404)
+        .json({ message: "Project not found or unauthorized" });
     }
 
     await prisma.project.delete({
-      where: { id },
+      where: {
+        id,
+      },
     });
 
-    res.json({ message: 'Project deleted successfully' });
+    res.json({ message: "Project deleted successfully" });
   } catch (error) {
-    console.error('Delete project error:', error);
-    res.status(500).json({ message: 'Error deleting project' });
+    console.error("Delete project error:", error);
+    res.status(500).json({ message: "Error deleting project" });
   }
 };

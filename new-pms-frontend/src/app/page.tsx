@@ -1,5 +1,10 @@
-import Link from 'next/link';
-import { ArrowRight, CheckCircle, FolderKanban, ShieldCheck } from 'lucide-react';
+import Link from "next/link";
+import {
+  ArrowRight,
+  CheckCircle,
+  FolderKanban,
+  ShieldCheck,
+} from "lucide-react";
 
 export default function Home() {
   return (
@@ -9,10 +14,12 @@ export default function Home() {
         <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
           <div className="text-center">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-              Manage your projects with <span className="text-blue-600">modern simplicity.</span>
+              Manage your projects with{" "}
+              <span className="text-blue-600">modern simplicity.</span>
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600">
-              A scalable, production-grade project management system built for speed, security, and team collaboration.
+              A scalable, production-grade project management system built for
+              speed, security, and team collaboration.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link
@@ -21,7 +28,10 @@ export default function Home() {
               >
                 Get started <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-              <Link href="/login" className="text-sm font-semibold leading-6 text-gray-900">
+              <Link
+                href="/login"
+                className="text-sm font-semibold leading-6 text-gray-900"
+              >
                 Log in <span aria-hidden="true">→</span>
               </Link>
             </div>
@@ -33,7 +43,9 @@ export default function Home() {
       <div className="bg-gray-50 py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-blue-600">Built for Scale</h2>
+            <h2 className="text-base font-semibold leading-7 text-blue-600">
+              Built for Scale
+            </h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
               Everything you need to ship projects faster.
             </p>
@@ -47,7 +59,9 @@ export default function Home() {
                   </div>
                   Project Organization
                 </dt>
-                <dd className="mt-2 text-base leading-7 text-gray-600">Keep your work organized in logical projects and workspaces.</dd>
+                <dd className="mt-2 text-base leading-7 text-gray-600">
+                  Keep your work organized in logical projects and workspaces.
+                </dd>
               </div>
               <div className="relative pl-16">
                 <dt className="text-base font-semibold leading-7 text-gray-900">
@@ -56,7 +70,10 @@ export default function Home() {
                   </div>
                   Task Management
                 </dt>
-                <dd className="mt-2 text-base leading-7 text-gray-600">Track tasks from start to finish with real-time status updates.</dd>
+                <dd className="mt-2 text-base leading-7 text-gray-600">
+                  Track tasks from start to finish with real-time status
+                  updates.
+                </dd>
               </div>
               <div className="relative pl-16">
                 <dt className="text-base font-semibold leading-7 text-gray-900">
@@ -65,7 +82,10 @@ export default function Home() {
                   </div>
                   Enterprise Security
                 </dt>
-                <dd className="mt-2 text-base leading-7 text-gray-600">Your data is secured with industry-standard JWT and password hashing.</dd>
+                <dd className="mt-2 text-base leading-7 text-gray-600">
+                  Your data is secured with industry-standard JWT and password
+                  hashing.
+                </dd>
               </div>
             </dl>
           </div>

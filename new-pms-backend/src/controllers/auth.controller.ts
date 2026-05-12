@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import prisma from '../lib/prisma';
+import { Request, Response } from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import prisma from "../lib/prisma";
 
 /**
  * REGISTER: Create a new user account
@@ -13,7 +13,9 @@ export const register = async (req: Request, res: Response) => {
     // 1. Check if user already exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists with this email' });
+      return res
+        .status(400)
+        .json({ message: "User already exists with this email" });
     }
 
     // 2. Hash the password (Scramble it!)
@@ -29,10 +31,14 @@ export const register = async (req: Request, res: Response) => {
       },
     });
 
-    res.status(201).json({ message: 'User registered successfully!', userId: user.id });
+    res
+      .status(201)
+      .json({ message: "User registered successfully!", userId: user.id });
   } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ message: 'Internal server error during registration' });
+    console.error("Registration error:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error during registration" });
   }
 };
 
@@ -46,13 +52,13 @@ export const login = async (req: Request, res: Response) => {
     // 1. Find the user
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid email or password' });
+      return res.status(400).json({ message: "Invalid email or password" });
     }
 
     // 2. Compare the password you typed with the one in the DB
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(400).json({ message: 'Invalid email or password' });
+      return res.status(400).json({ message: "Invalid email or password" });
     }
 
     // 3. Generate a JWT Token (The Digital ID Card)
@@ -60,12 +66,12 @@ export const login = async (req: Request, res: Response) => {
     const token = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET as string,
-      { expiresIn: '1d' }
+      { expiresIn: "1d" },
     );
 
     // 4. Return the user info and the token
     res.json({
-      message: 'Login successful!',
+      message: "Login successful!",
       token,
       user: {
         id: user.id,
@@ -74,8 +80,8 @@ export const login = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ message: 'Internal server error during login' });
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Internal server error during login" });
   }
 };
 
@@ -89,7 +95,7 @@ export const getUsers = async (req: Request, res: Response) => {
     });
     res.json(users);
   } catch (error) {
-    console.error('Get users error:', error);
-    res.status(500).json({ message: 'Error fetching users' });
+    console.error("Get users error:", error);
+    res.status(500).json({ message: "Error fetching users" });
   }
 };
